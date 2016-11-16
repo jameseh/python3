@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import sys
-from operator import itemgetter
 '''Find all files in path, display number of the largest files.
    Example: ./FindLargest.py /home/ 50'''
 
@@ -51,7 +50,7 @@ def find_files(PATH):
 
 def print_largest(FILE_LIST, NUMBER_OF_ITEMS):
 #sort the list by the size and display files.
-    sorted_list = sorted(FILE_LIST, key=itemgetter(0), reverse=True)
+    sorted_list = sorted(FILE_LIST, reverse=True)
     for items in sorted_list[:int(NUMBER_OF_ITEMS)]:
         print("File: '%s' \nSize: %s \n" % (items[1], size(items[0])))
 
