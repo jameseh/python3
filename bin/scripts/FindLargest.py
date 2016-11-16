@@ -6,6 +6,7 @@ import sys
 
 
 FILE_LIST = []
+SORTED_LIST = []
 PATH = sys.argv[1]
 NUMBER_OF_ITEMS = sys.argv[2]
 
@@ -13,7 +14,8 @@ NUMBER_OF_ITEMS = sys.argv[2]
 def main():
     check_user_input(PATH, NUMBER_OF_ITEMS)
     find_files(PATH)
-    print_largest(FILE_LIST, NUMBER_OF_ITEMS)
+    sort_list(FILE_LIST)
+    print_largest(SORTED_LIST, NUMBER_OF_ITEMS)
 
 
 def size(num, suffix='B'):
@@ -48,10 +50,14 @@ def find_files(PATH):
                     FILE_LIST.append((os.path.getsize(file_path), file_path))
 
 
-def print_largest(FILE_LIST, NUMBER_OF_ITEMS):
-#sort the list by the size and display files.
-    sorted_list = sorted(FILE_LIST, reverse=True)
-    for items in sorted_list[:int(NUMBER_OF_ITEMS)]:
+def sort_list(FILE_LIST):
+    global SORTED_LIST
+    SORTED_LIST = sorted(FILE_LIST, reverse=True)
+
+
+def print_largest(SORTED_LIST, NUMBER_OF_ITEMS):
+#print NUMBER_OF_ITEMS of files and their size.
+    for items in SORTED_LIST[:int(NUMBER_OF_ITEMS)]:
         print("File: '%s' \nSize: %s \n" % (items[1], size(items[0])))
 
 
