@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 """Find all files in path, display number of the largest files.
-Example: ./FindLargest.py home 50"""
-#you don't need / around 'home'
+Example: ./FindLargest.py full/path/to/directory 50"""
+
 
 import os
 import sys
 
-#ALL_CAPS global names are for constants, which these variables are not.
 
 def main(path, number_of_items):
     file_list = find_files(path)
@@ -16,7 +15,7 @@ def main(path, number_of_items):
 
 
 def size(num, suffix='B'):
-#convert bytes to human
+    '''convert bytes to human'''
     for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
         if abs(num) < 1024.0:
             return "%3.1f%s%s" % (num, unit, suffix)
@@ -34,7 +33,7 @@ def check_user_number(number_of_items):
         print('Please enter a positive integer.')
     except AssertionError:
         print('Please enter a number of items greater than 0')
-    sys.exit(1) # same as 'quit()' but available in more places. A non-zero exit code is traditional for 'something went wrong'
+    sys.exit(1)
 
 
 def check_user_path(path):
@@ -60,6 +59,7 @@ def find_files(path):
 
 
 def sort_list(file_list):
+    '''sort file_list decending by size'''
     sorted_list = sorted(file_list, reverse=True)
     return sorted_list
 
@@ -72,7 +72,7 @@ def print_largest(sorted_list, number_of_items):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        #user did not supply enough arguments, print the useage directions.
+    #if user did not supply enough arguments, print the useage directions.
         print(__doc__)
     else:
         path = check_user_path(sys.argv[1])
