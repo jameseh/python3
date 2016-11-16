@@ -1,21 +1,18 @@
 #!/usr/bin/env python3
+
+"""Find all files in path, display number of the largest files.
+Example: ./FindLargest.py home 50"""
+#you don't need / around 'home'
+
 import os
 import sys
-'''Find all files in path, display number of the largest files.
-   Example: ./FindLargest.py /home/ 50'''
 
+#ALL_CAPS global names are for constants, which these variables are not.
 
-FILE_LIST = []
-SORTED_LIST = []
-PATH = sys.argv[1]
-NUMBER_OF_ITEMS = sys.argv[2]
-
-
-def main():
-    check_user_input(PATH, NUMBER_OF_ITEMS)
-    find_files(PATH)
-    sort_list(FILE_LIST)
-    print_largest(SORTED_LIST, NUMBER_OF_ITEMS)
+def main(path, number_of_items):
+    file_list = find_files(path)
+    sorted_list = sort_list(file_list)
+    print_largest(sorted_list, number_of_items)
 
 
 def size(num, suffix='B'):
@@ -27,39 +24,57 @@ def size(num, suffix='B'):
     return "%.1f%s%s" % (num, 'Yi', suffix)
 
 
-def check_user_input(PATH, NUMBER_OF_ITEMS):
-#make sure PATH and NUMBER_OF_ITEMS are valid inputs
+def check_user_number(number_of_items):
+    '''make sure number_of_items is valid'''
     try:
-        NUMBER_OF_ITEMS = int(NUMBER_OF_ITEMS)
-        if not os.path.isdir(PATH) is True:
-            print('Please enter a valid path.')
-        if float(NUMBER_OF_ITEMS) < 0:
-            quit()
-    except:
+        number_of_items = int(number_of_items)
+        assert number_of_items > 0
+        return number_of_items
+    except ValueError:
         print('Please enter a positive integer.')
-        quit()
+    except AssertionError:
+        print('Please enter a number of items greater than 0')
+    sys.exit(1) # same as 'quit()' but available in more places. A non-zero exit code is traditional for 'something went wrong'
 
 
-def find_files(PATH):
-#find all files recursivly in a given path and save them in a list
-    for dirpath, dirnames, filenames in os.walk(PATH, topdown=False, followlinks=False):
+def check_user_path(path):
+    '''make sure path is valid'''
+    try:
+        assert os.path.isdir(path)
+        return path
+    except AssertionError:
+        print('Please enter a valid path')
+    sys.exit(1)
+
+
+def find_files(path):
+    '''find all files recursivly in a given path and save them in a list'''
+    file_list = []
+    for dirpath, dirnames, filenames in os.walk(path, topdown=False, followlinks=False):
         if not dirpath.startswith(('/proc', '/dev', '/sys', '/run')):
             for files in filenames:
                 file_path = os.path.join(dirpath, files)
-                if os.path.isfile(file_path) == True:
-                    FILE_LIST.append((os.path.getsize(file_path), file_path))
+                if os.path.isfile(file_path):
+                    file_list.append((os.path.getsize(file_path), file_path))
+    return file_list
 
 
-def sort_list(FILE_LIST):
-    global SORTED_LIST
-    SORTED_LIST = sorted(FILE_LIST, reverse=True)
+def sort_list(file_list):
+    sorted_list = sorted(file_list, reverse=True)
+    return sorted_list
 
 
-def print_largest(SORTED_LIST, NUMBER_OF_ITEMS):
-#print NUMBER_OF_ITEMS of files and their size.
-    for items in SORTED_LIST[:int(NUMBER_OF_ITEMS)]:
-        print("File: '%s' \nSize: %s \n" % (items[1], size(items[0])))
+def print_largest(sorted_list, number_of_items):
+    '''print NUMBER_OF_ITEMS of files and their size.'''
+    for size_in_bytes, name in sorted_list[:number_of_items]:
+        print("File: '%s' \nSize: %s \n" % (name, size(size_in_bytes)))
 
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) < 3:
+        #user did not supply enough arguments, print the useage directions.
+        print(__doc__)
+    else:
+        path = check_user_path(sys.argv[1])
+        number_of_items = check_user_number(sys.argv[2])
+        main(path, number_of_items)
