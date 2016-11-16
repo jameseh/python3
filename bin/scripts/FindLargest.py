@@ -28,7 +28,7 @@ def check_user_number(number_of_items):
     '''make sure number_of_items is valid'''
     try:
         number_of_items = int(number_of_items)
-        assert float(number_of_items) > 0
+        assert number_of_items > 0
         return number_of_items
     except ValueError:
         print('Please enter a positive integer.')
@@ -71,11 +71,10 @@ def print_largest(sorted_list, number_of_items):
 
 
 if __name__ == '__main__':
-    try:
-        path = check_user_path(sys.argv[1])
-        number_of_items = check_user_number(sys.argv[2])
-    except IndexError:
+    if len(sys.argv) < 3:
         #user did not supply enough arguments, print the useage directions.
         print(__doc__)
     else:
+        path = check_user_path(sys.argv[1])
+        number_of_items = check_user_number(sys.argv[2])
         main(path, number_of_items)
