@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 
 """Find all files in path, display specified amount of the largest files and thier size.
-Usage:   ./FindLargest.py [path] [number-of-files-to-display] Optional(--ps=[paths,to,exclude])
-Example: ./FindLargest.py /home 10 --ps=/dev,/sys,/proc
+Usage:   ./FindLargest.py [path] [number-of-files-to-display] Optional(--psw=[paths,to,exclude]
+Optional(--ere='regualar expression to exclude')
+Example: ./FindLargest.py /home 10 --psw=/dev,/sys,/proc --ere='^.*\.txt$'
 """
 
 import os
 import sys
 import argparse
+import re
 
-
-def main(path, number_of_items, pass_if_startswith=None):
-    file_list = find_files(path, pass_if_startswith)
+def main(path, number_of_items, pass_if_startswith=None, pass_matching_re=None):
+    file_list = find_files(path, pass_if_startswith, pass_matching_re)
     file_list = sort_list(file_list)
     print_largest(file_list, number_of_items)
 
@@ -58,22 +59,39 @@ def format_pass_if_startswith(pass_if_startswith=None):
         return pass_if_startswith
 
 
-def find_files(path, pass_if_startswith=None):
+def find_files(path, pass_if_startswith=None, pass_matching_re=None):
     '''find all files recursivly in a given path and save them in a list optionally ignoring
     directories specified.'''
     file_list = []
     for dirpath, dirnames, filenames in os.walk(path, topdown=False, followlinks=False):
-        if not pass_if_startswith == None:
+        if pass_if_startswith == None and pass_matching_re == None:
+            for files in filenames:
+                file_path = os.path.join(dirpath, files)
+                if os.path.isfile(file_path):
+                    file_list.append((os.path.getsize(file_path), file_path))
+        elif not pass_if_startswith == None and not pass_matching_re == None:
+            if not dirpath.startswith(pass_if_startswith):
+                if re.search(pass_matching_re, dirpath):
+                    pass
+                else:
+                    for files in filenames:
+                        file_path = os.path.join(dirpath, files)
+                        if os.path.isfile(file_path):
+                            file_list.append((os.path.getsize(file_path), file_path))
+        elif not pass_if_startswith == None:
             if not dirpath.startswith(pass_if_startswith):
                 for files in filenames:
                     file_path = os.path.join(dirpath, files)
                     if os.path.isfile(file_path):
                         file_list.append((os.path.getsize(file_path), file_path))
-        else:
-            for files in filenames:
-                file_path = os.path.join(dirpath, files)
-                if os.path.isfile(file_path):
-                    file_list.append((os.path.getsize(file_path), file_path))
+        elif not pass_matching_re == None:
+            if re.search(pass_matching_re, dirpath):
+                pass
+            else:
+                for files in filenames:
+                    file_path = os.path.join(dirpath, files)
+                    if os.path.isfile(file_path):
+                        file_list.append((os.path.getsize(file_path), file_path))
     return file_list
 
 
@@ -95,13 +113,15 @@ if __name__ == '__main__':
         print(__doc__)
     else:
         parser = argparse.ArgumentParser()
-        parser.add_argument("--ps", type=str, help="Pass if directory starts with.")
+        parser.add_argument("--psw", type=str, help="Pass if directory starts with.")
+        parser.add_argument("--ere", type=str, help="Pass if directory contains RE.")
         parser.add_argument("path", type=str, help="Path to search.")
         parser.add_argument("number_of_items", help="Number of files to display.")
         args = parser.parse_args()
 
-        pass_if_startswith = format_pass_if_startswith(args.ps)
+        pass_if_startswith = format_pass_if_startswith(args.psw)
         path = check_user_path(args.path)
+        pass_matching_re = args.ere
         number_of_items = check_user_number(args.number_of_items)
 
-        main(path, number_of_items, pass_if_startswith)
+        main(path, number_of_items, pass_if_startswith, pass_matching_re)
