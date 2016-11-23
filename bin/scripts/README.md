@@ -6,7 +6,9 @@
 
 ###Find all files in path, display number of the largest files.
 ####Usage:  
-``` ./FindLargest.py full/path/to/directory 50 paths/to/exclude```
+```./FindLargest.py [path] [number-of-files-to-display] 
+Optional(--psw=[paths,to,exclude]```
 
 ####Example: 
-```./FindLargest.py /home 10 Downloads Music```
+```Example: ./FindLargest.py /home 10 --psw=/dev,/sys,/proc 
+--ere='^.*\.txt$'```
