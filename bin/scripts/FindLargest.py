@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 
 """Find all files in path, display number of the largest files.
-Example: ./FindLargest.py full/path/to/directory 50"""
+Usage:   ./FindLargest.py full/path/to/directory 50 paths/to/exclude
+Example: ./FindLargest.py /home 10 Downloads Music
+"""
 
 
 import os
 import sys
+import argparse
 
-
-def main(path, number_of_items):
-    file_list = find_files(path)
-    sorted_list = sort_list(file_list)
-    print_largest(sorted_list, number_of_items)
+def main(path, number_of_items, pass_if_startswith=None):
+    pass_if_startswith = format_pass_if_startswith(pass_if_startswith)
+    file_list = find_files(path, pass_if_startswith)
+    file_list = sort_list(file_list)
+    print_largest(file_list, number_of_items)
 
 
 def size(num, suffix='B'):
@@ -46,27 +49,50 @@ def check_user_path(path):
     sys.exit(1)
 
 
-def find_files(path):
+def format_pass_if_startswith(pass_if_startswith=None):
+    if pass_if_startswith == None:
+        pass
+    else:
+        list_to_string = pass_if_startswith.split(',')
+        print(list_to_string)
+        #pass_if_startswith = []
+        #for item in list_to_string:
+        #    new_item = "'{}',".format(item)
+        #    pass_if_startswith.append(new_item)
+        #pass_if_startswith = ''.join(pass_if_startswith)
+        #pass_if_startswith = pass_if_startswith[:-1]
+        #pass_if_startswith = "({})".format(pass_if_startswith)
+        return pass_if_startswith
+
+
+def find_files(path, pass_if_startswith=None):
     '''find all files recursivly in a given path and save them in a list'''
     file_list = []
     for dirpath, dirnames, filenames in os.walk(path, topdown=False, followlinks=False):
-        if not dirpath.startswith(('/proc', '/dev', '/sys', '/run')):
+        if pass_if_startswith == None:
             for files in filenames:
                 file_path = os.path.join(dirpath, files)
                 if os.path.isfile(file_path):
                     file_list.append((os.path.getsize(file_path), file_path))
+        else:
+            for dir in pass_if_startswith:
+                if not dirpath.startswith(str(dir)):
+                    for files in filenames:
+                        file_path = os.path.join(dirpath, files)
+                        if os.path.isfile(file_path):
+                            file_list.append((os.path.getsize(file_path), file_path))
     return file_list
 
 
 def sort_list(file_list):
-    '''sort file_list decending by size'''
-    sorted_list = sorted(file_list, reverse=True)
-    return sorted_list
+    '''sort file_list decending by size in place'''
+    file_list.sort(reverse=True)
+    return file_list
 
 
-def print_largest(sorted_list, number_of_items):
+def print_largest(file_list, number_of_items):
     '''print NUMBER_OF_ITEMS of files and their size.'''
-    for size_in_bytes, name in sorted_list[:number_of_items]:
+    for size_in_bytes, name in file_list[:number_of_items]:
         print("File: '%s' \nSize: %s \n" % (name, size(size_in_bytes)))
 
 
@@ -75,6 +101,13 @@ if __name__ == '__main__':
     #if user did not supply enough arguments, print the useage directions.
         print(__doc__)
     else:
-        path = check_user_path(sys.argv[1])
-        number_of_items = check_user_number(sys.argv[2])
-        main(path, number_of_items)
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--ps", type=str, help="Pass if directory starts with.")
+        parser.add_argument("path", type=str, help="Path to search.")
+        parser.add_argument("number_of_items", help="Number of files to display.")
+        args = parser.parse_args()
+        pass_if_startswith = args.ps
+        path = check_user_path(args.path)
+        number_of_items = check_user_number(args.number_of_items)
+        main(path, number_of_items, pass_if_startswith)
+
