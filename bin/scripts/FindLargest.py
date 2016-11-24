@@ -14,7 +14,7 @@ import re
 def main(path, number_of_items, pass_if_startswith=None, pass_matching_directory_re=None, display_matching_re=None):
     file_list = find_files(path, pass_if_startswith, pass_matching_directory_re)
     file_list = sort_list(file_list)
-    show_only_matching_re(file_list, display_matching_re)
+    check_regex_input(pass_matching_directory_re, display_matching_re)
     print_largest(file_list, number_of_items)
 
 
@@ -125,8 +125,7 @@ def check_regex_input(pass_matching_directory_re=None, display_matching_re=None)
             display_matching_re = re.compile(display_matching_re)
         except:
             print('Enter a valid RE.')
-    return pass_matching_directory_re
-    return display_matching_re
+    return pass_matching_directory_re and display_matching_re
 
 
 if __name__ == '__main__':
