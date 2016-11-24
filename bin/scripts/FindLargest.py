@@ -60,20 +60,6 @@ def format_pass_if_startswith(pass_if_startswith=None):
         return pass_if_startswith
 
 
-def check_re_input(pass_matching_directory_re=None, display_matching_re=None):
-    if not pass_matching_directory_re == None:
-        try:
-            re.compile(pass_matching_directory_re)
-        except re.error:
-            print('Enter a valid regular expression.')
-    elif not display_matching_re == None:
-        try:
-            re.compile(display_matching_re)
-        except re.error:
-            print('Enter a valid regular expression.')
-    return pass_matching_directory_re, display_matching_re
-
-
 def find_files(path, pass_if_startswith=None, pass_matching_directory_re=None):
     '''find all files recursivly in a given path and save them in a list optionally ignoring
     directories specified.'''
@@ -117,12 +103,8 @@ def sort_list(file_list):
 
 
 def show_only_matching_re(file_list, display_matching_re=None):
-    matching_re_list = []
     if not display_matching_re == None:
-        for size_in_bytes, name in file_list[:]:
-            if re.search(display_matching_re, name):
-                matching_re_list.append((size_in_bytes, name))
-    file_list = matching_re_list
+        file_list = filter(display_matching_re.search, file_list)
     return file_list
 
 
@@ -130,6 +112,21 @@ def print_largest(file_list, number_of_items):
     '''print number_of_items of files and their size.'''
     for size_in_bytes, name in file_list[:number_of_items]:
         print("File: '{}' \nSize: {} \n".format(name, size(size_in_bytes)))
+
+
+def check_regex_input(pass_matching_directory_re=None, display_matching_re=None):
+    if not pass_matching_directory_re == None:
+        try:
+            pass_matching_directory_re = re.compile(pass_matching_directory_re)
+        except:
+            print('Enter a valid RE.')
+    if not display_matching_re == None:
+        try:
+            display_matching_re = re.compile(display_matching_re)
+        except:
+            print('Enter a valid RE.')
+    return pass_matching_directory_re
+    return display_matching_re
 
 
 if __name__ == '__main__':
@@ -147,8 +144,8 @@ if __name__ == '__main__':
 
         pass_if_startswith = format_pass_if_startswith(args.psw)
         path = check_user_path(args.path)
-        pass_matching_directory_re = check_re_input(args.pre)
-        display_matching_re = check_re_input(args.mre)
+        pass_matching_directory_re = check_regex_input(args.pre)
+        display_matching_re = check_regex_input(args.mre)
         number_of_items = check_user_number(args.number_of_items)
 
         main(path, number_of_items, pass_if_startswith, pass_matching_directory_re, display_matching_re)
