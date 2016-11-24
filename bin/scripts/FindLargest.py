@@ -22,9 +22,9 @@ def size(num, suffix='B'):
     '''convert bytes to human'''
     for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
         if abs(num) < 1024.0:
-            return "%3.1f%s%s" % (num, unit, suffix)
+            return "{:3.1f}{}{}".format(num, unit, suffix)
         num /= 1024.0
-    return "%.1f%s%s" % (num, 'Yi', suffix)
+    return "{:.1f}{}{}".format(num, 'Yi', suffix)
 
 
 def check_user_number(number_of_items):
@@ -130,6 +130,7 @@ def print_largest(file_list, number_of_items):
     '''print number_of_items of files and their size.'''
     for size_in_bytes, name in file_list[:number_of_items]:
         print("File: '{}' \nSize: {} \n".format(name, size(size_in_bytes)))
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
