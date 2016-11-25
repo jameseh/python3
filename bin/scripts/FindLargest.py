@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
+"""
+Usage:   ./FindLargest.py [DIRECTORY PATH] [NUMBER OF FILES] [OPTIONAL] ...
+Example: ./FindLargest.py /home 10 --pd=/dev,/sys,/proc --ere='^.+somepattern+.$'
 
-"""Find all files in path, display specified amount of the largest files and thier size.
-Usage:   ./FindLargest.py [path] [number-of-files-to-display] Optional(--psw=[paths,to,exclude]
-Optional(--ere='regualar expression to exclude')
-Example: ./FindLargest.py /home 10 --psw=/dev,/sys,/proc --ere='^.*\.txt$'
+Find all files in recursively from [DIRECTORY PATH], sort and display the [NUMBER OF FILES] specified.
+
+Mandatory args:
+[DIRECTORY]                                - Positional argument, full path of directory so search.
+[NUMBER_OF_FILES]                          - Positional argument, number of files to display.
+
+Optional args:
+--pd                                       - Pass if directory starts with.
+--pf                                       - Pass if file ends with.
+--pdre                                     - Pass if directory matches regex.
+--pfre                                     - Pass if file matches regex.
+--mre                                      - Display only filenames or paths matching regex.
+--ere                                      - Exclude all filenames or paths matching regex.
 """
 
 import os
@@ -11,11 +23,15 @@ import sys
 import argparse
 import re
 
-def main(path, number_of_items, pass_if_startswith=None, pass_matching_directory_re=None, display_matching_re=None):
-    file_list = find_files(path, pass_if_startswith, pass_matching_directory_re)
+
+def main(path, number_of_items, pass_if_startswith=None, pass_if_endswith=None, pass_matching_directory_re=None,
+         pass_matching_file_re=None, display_matching_re=None, exclude_matching_re=None):
+    file_list = find_files(path, pass_if_startswith, pass_if_endswith, pass_matching_directory_re, pass_matching_file_re)
     file_list = sort_list(file_list)
     if not display_matching_re == None:
         file_list = show_only_matching_re(file_list, display_matching_re)
+    elif not exclude_matching_re == None:
+        file_list = show_exclude_matching_re(file_list, exclude_matching_re)
     print_largest(file_list, number_of_items)
 
 
@@ -51,46 +67,153 @@ def check_user_path(path):
     sys.exit(1)
 
 
-def format_pass_if_startswith(pass_if_startswith=None):
+def format_pass_if(pass_if_startswith=None, pass_if_endswith=None):
     '''format optional arguement string into a tuple if it does not equal "None".'''
-    if pass_if_startswith == None:
-        return pass_if_startswith
-    else:
+    if not pass_if_startswith == None:
         pass_if_startswith = pass_if_startswith.split(',')
         pass_if_startswith = tuple(pass_if_startswith)
         return pass_if_startswith
+    elif not pass_if_endswith == None:
+        pass_if_startswith = pass_if_endswith.split(',')
+        pass_if_startswith = tuple(pass_if_endswith)
+        return pass_if_endswith
 
 
-def find_files(path, pass_if_startswith=None, pass_matching_directory_re=None):
+def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matching_directory_re=None,
+               pass_matching_file_re=None):
     '''find all files recursivly in a given path and save them in a list optionally ignoring
     directories specified.'''
     file_list = []
     for dirpath, dirnames, filenames in os.walk(path, topdown=False, followlinks=False):
-        if pass_if_startswith == None and pass_matching_directory_re == None:
+        if pass_if_startswith == None and pass_if_endswith == None\
+                and pass_matching_directory_re == None and pass_matching_file_re == None:
             for files in filenames:
                 file_path = os.path.join(dirpath, files)
                 if os.path.isfile(file_path):
                     file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_startswith == None and not pass_if_endswith == None\
+                and not pass_matching_directory_re == None and not pass_matching_file_re == None:
+            if not dirpath.startswith(pass_if_startswith):
+                if not re.search(pass_matching_directory_re, dirpath):
+                    for files in filenames:
+                        if not files.endswith(pass_if_endswith):
+                            if not re.search(pass_matching_file_re, files):
+                                file_path = os.path.join(dirpath, files)
+                                if os.path.isfile(file_path):
+                                    file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_startswith == None and not pass_if_endswith == None and not pass_matching_directory_re == None:
+            if not dirpath.startswith(pass_if_startswith):
+                if not re.search(pass_matching_directory_re, dirpath):
+                    for files in filenames:
+                        if not filenames.endswith(pass_if_endswith):
+                            file_path = os.path.join(dirpath, files)
+                            if os.path.isfile(file_path):
+                                file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_startswith == None and not pass_if_endswith == None and not pass_matching_file_re == None:
+            if not dirpath.startswith(pass_if_startswith):
+                for files in filenames:
+                    if not files.endswith(pass_if_endswith):
+                        if not re.search(pass_matching_file_re, files):
+                            file_path = os.path.join(dirpath, files)
+                            if os.path.isfile(file_path):
+                                file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_startswith == None and not pass_matching_directory_re == None\
+                and not pass_matching_file_re == None:
+            if not re.search(pass_matching_directory_re, dirpath):
+                if not dirpath.startswith(pass_if_startswith):
+                    for files in filenames:
+                        if not re.search(pass_matching_file_re, files):
+                            file_path = os.path.join(dirpath, files)
+                            if os.path.isfile(file_path):
+                                file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_endswith == None and not pass_matching_directory_re == None\
+                and not pass_matching_file_re == None:
+            if not re.search(pass_matching_directory_re, dirpath):
+                for files in filenames:
+                    if not re.search(pass_matching_file_re, files):
+                        if not files.endswith(pass_if_endswith):
+                            file_path = os.path.join(dirpath, files)
+                            if os.path.isfile(file_path):
+                                file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_startswith == None and not pass_if_endswith == None:
+            if not dirpath.startswith(pass_if_startswith):
+                for files in filenames:
+                    if not files.endswith(pass_if_endswith):
+                        file_path = os.path.join(dirpath, files)
+                        if os.path.isfile(file_path):
+                            file_list.append((os.path.getsize(file_path), file_path))
+
         elif not pass_if_startswith == None and not pass_matching_directory_re == None:
             if not dirpath.startswith(pass_if_startswith):
-                if re.search(pass_matching_directory_re, dirpath):
-                    pass
-                else:
+                if not re.search(pass_matching_directory_re, dirpath):
                     for files in filenames:
                         file_path = os.path.join(dirpath, files)
                         if os.path.isfile(file_path):
                             file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_startswith == None and not pass_matching_file_re == None:
+            if not dirpath.startswith(pass_if_startswith):
+                for files in filenames:
+                    if not re.search(pass_matching_file_re, files):
+                        file_path = os.path.join(dirpath, files)
+                        if os.path.isfile(file_path):
+                            file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_endswith == None and not pass_matching_directory_re == None:
+            if not re.search(pass_matching_directory_re, dirpath):
+                for files in filenames:
+                    if not files.endswith(pass_if_endswith):
+                        file_path = os.path.join(dirpath, files)
+                        if os.path.isfile(file_path):
+                            file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_endswith == None and not pass_matching_file_re == None:
+            for files in filenames:
+                if not files.endswith(pass_if_endswith):
+                    if not re.search(pass_matching_file_re, files):
+                        file_path = os.path.join(dirpath, files)
+                        if os.path.isfile(file_path):
+                            file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_matching_directory_re == None and not pass_matching_file_re == None:
+            if not re.search(pass_matching_directory_re, dirpath):
+                for files in filenames:
+                    if not re.search(pass_matching_file_re, files):
+                        file_path = os.path.join(dirpath, files)
+                        if os.path.isfile(file_path):
+                            file_list.append((os.path.getsize(file_path), file_path))
+
         elif not pass_if_startswith == None:
             if not dirpath.startswith(pass_if_startswith):
                 for files in filenames:
                     file_path = os.path.join(dirpath, files)
                     if os.path.isfile(file_path):
                         file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_if_endswith == None:
+            for files in filenames:
+                if not files.endswith(pass_if_endswith):
+                    file_path = os.path.join(dirpath, files)
+                    if os.path.isfile(file_path):
+                        file_list.append((os.path.getsize(file_path), file_path))
+
         elif not pass_matching_directory_re == None:
-            if re.search(pass_matching_directory_re, dirpath):
-                pass
-            else:
-                for files in filenames:
+            for files in filenames:
+                for dirname in dirnames:
+                    if not re.search(pass_matching_directory_re, dirname):
+                        file_path = os.path.join(dirpath, files)
+                        if os.path.isfile(file_path):
+                            file_list.append((os.path.getsize(file_path), file_path))
+
+        elif not pass_matching_file_re == None:
+            for files in filenames:
+                if not re.search(pass_matching_file_re, files):
                     file_path = os.path.join(dirpath, files)
                     if os.path.isfile(file_path):
                         file_list.append((os.path.getsize(file_path), file_path))
@@ -101,6 +224,17 @@ def sort_list(file_list):
     '''sort file_list, decending by size, in place.'''
     file_list.sort(reverse=True)
     return file_list
+
+
+def show_exclude_matching_re(file_list, exclude_matching_re=None):
+    '''exclude filenames and paths that match regex.'''
+    if not exclude_matching_re == None:
+        matching_list = []
+        for size_in_bytes, name in file_list:
+            if not re.search(exclude_matching_re, name):
+                matching_list.append((size_in_bytes, name))
+        file_list = matching_list
+        return file_list
 
 
 def show_only_matching_re(file_list, display_matching_re=None):
@@ -119,7 +253,8 @@ def print_largest(file_list, number_of_items):
         print("File: '{}' \nSize: {} \n".format(name, size(size_in_bytes)))
 
 
-def check_regex_input(pass_matching_directory_re=None, display_matching_re=None):
+def check_regex_input(pass_matching_directory_re=None, display_matching_re=None, exclude_matching_re=None,
+                      pass_matching_file_re=None):
     if not pass_matching_directory_re == None:
         try:
             assert re.compile(pass_matching_directory_re)
@@ -132,6 +267,18 @@ def check_regex_input(pass_matching_directory_re=None, display_matching_re=None)
             return display_matching_re
         except:
             print('Enter a valid RE.')
+    elif not exclude_matching_re == None:
+        try:
+            assert re.compile(exclude_matching_re)
+            return exclude_matching_re
+        except:
+            print('Enter a valid RE.')
+    elif not pass_matching_file_re == None:
+        try:
+            assert re.compile(pass_matching_file_re)
+            return pass_matching_file_re
+        except:
+            print('Enter a valid RE.')
     else:
         pass
 
@@ -141,17 +288,24 @@ if __name__ == '__main__':
         print(__doc__)
     else:
         parser = argparse.ArgumentParser()
-        parser.add_argument("--psw", type=str, help="Pass if directory starts with.")
-        parser.add_argument("--pre", type=str, help="Pass if directory contains RE.")
-        parser.add_argument("--mre", type=str, help="Display all files matching RE.")
         parser.add_argument("path", type=str, help="Path to search.")
         parser.add_argument("number_of_items", help="Number of files to display.")
+        parser.add_argument("--pd", type=str, help="Pass if directory starts with.")
+        parser.add_argument("--pf", type=str, help="Pass if file ends with.")
+        parser.add_argument("--pdre", type=str, help="Pass if directory matches regex.")
+        parser.add_argument("--pfre", type=str, help="Pass if file matches regex.")
+        parser.add_argument("--mre", type=str, help="Display all files matching RE.")
+        parser.add_argument("--ere", type=str, help="Exclude all files matching RE.")
         args = parser.parse_args()
 
-        pass_if_startswith = format_pass_if_startswith(args.psw)
         path = check_user_path(args.path)
-        pass_matching_directory_re = check_regex_input(args.pre)
-        display_matching_re = check_regex_input(args.mre)
         number_of_items = check_user_number(args.number_of_items)
+        pass_if_startswith = format_pass_if(args.pd)
+        pass_if_endswith = format_pass_if(args.pf)
+        pass_matching_directory_re = check_regex_input(args.pdre)
+        pass_matching_file_re = check_regex_input(args.pfre)
+        display_matching_re = check_regex_input(args.mre)
+        exclude_matching_re = check_regex_input(args.ere)
 
-        main(path, number_of_items, pass_if_startswith, pass_matching_directory_re, display_matching_re)
+        main(path, number_of_items, pass_if_startswith, pass_if_endswith, pass_matching_directory_re,
+             pass_matching_file_re, display_matching_re, exclude_matching_re)
