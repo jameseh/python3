@@ -4,16 +4,16 @@
 
 ## FindLargest.py
 
-###Find all files in recursively from [DIRECTORY PATH], sort and display the [NUMBER OF FILES] specified.
+###Find all files in recursively from [DIRECTORY_PATH], sort and display the [NUMBER_OF_FILES] specified.
 
 ####Usage:
-```./FindLargest.py [DIRECTORY PATH] [NUMBER OF FILES] [OPTIONAL] ...```
+```./FindLargest.py [DIRECTORY_PATH] [NUMBER_OF_FILES] [OPTIONAL] ...```
 ####Example:
 ```./FindLargest.py /home 10 --pd=/dev,/sys,/proc --ere='^.+somepattern+.$'```
 
 #####Mandatory args:
 ```
-[DIRECTORY]                                - Positional argument, full path of directory so search.
+[DIRECTORY_PATH]                           - Positional argument, full path of directory so search.
 [NUMBER_OF_FILES]                          - Positional argument, number of files to display.
 ```
 
