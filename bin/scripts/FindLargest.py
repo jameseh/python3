@@ -204,12 +204,11 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                         file_list.append((os.path.getsize(file_path), file_path))
 
         elif not pass_matching_directory_re == None:
-            for files in filenames:
-                for dirname in dirnames:
-                    if not re.search(pass_matching_directory_re, dirname):
-                        file_path = os.path.join(dirpath, files)
-                        if os.path.isfile(file_path):
-                            file_list.append((os.path.getsize(file_path), file_path))
+            if not re.search(pass_matching_directory_re, dirpath):
+                for files in filenames:
+                    file_path = os.path.join(dirpath, files)
+                    if os.path.isfile(file_path):
+                        file_list.append((os.path.getsize(file_path), file_path))
 
         elif not pass_matching_file_re == None:
             for files in filenames:
