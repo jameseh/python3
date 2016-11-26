@@ -19,7 +19,7 @@
 
 #####Optional args:
 ```
---pd                                       - Pass if directory starts with.
+--pd                                       - Pass if directory starts with (full path).
 --pf                                       - Pass if file ends with.
 --pdre                                     - Pass if directory matches regex.
 --pfre                                     - Pass if file matches regex.
