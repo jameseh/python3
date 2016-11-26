@@ -91,7 +91,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                 file_path = os.path.join(dirpath, files)
                 if os.path.isfile(file_path):
                     file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_startswith == None and not pass_if_endswith == None\
                 and not pass_matching_directory_re == None and not pass_matching_file_re == None:
             if not dirpath.startswith(pass_if_startswith):
@@ -102,7 +101,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                                 file_path = os.path.join(dirpath, files)
                                 if os.path.isfile(file_path):
                                     file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_startswith == None and not pass_if_endswith == None and not pass_matching_directory_re == None:
             if not dirpath.startswith(pass_if_startswith):
                 if not re.search(pass_matching_directory_re, dirpath):
@@ -111,7 +109,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                             file_path = os.path.join(dirpath, files)
                             if os.path.isfile(file_path):
                                 file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_startswith == None and not pass_if_endswith == None and not pass_matching_file_re == None:
             if not dirpath.startswith(pass_if_startswith):
                 for files in filenames:
@@ -120,7 +117,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                             file_path = os.path.join(dirpath, files)
                             if os.path.isfile(file_path):
                                 file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_startswith == None and not pass_matching_directory_re == None\
                 and not pass_matching_file_re == None:
             if not re.search(pass_matching_directory_re, dirpath):
@@ -130,7 +126,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                             file_path = os.path.join(dirpath, files)
                             if os.path.isfile(file_path):
                                 file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_endswith == None and not pass_matching_directory_re == None\
                 and not pass_matching_file_re == None:
             if not re.search(pass_matching_directory_re, dirpath):
@@ -140,7 +135,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                             file_path = os.path.join(dirpath, files)
                             if os.path.isfile(file_path):
                                 file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_startswith == None and not pass_if_endswith == None:
             if not dirpath.startswith(pass_if_startswith):
                 for files in filenames:
@@ -148,7 +142,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                         file_path = os.path.join(dirpath, files)
                         if os.path.isfile(file_path):
                             file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_startswith == None and not pass_matching_directory_re == None:
             if not dirpath.startswith(pass_if_startswith):
                 if not re.search(pass_matching_directory_re, dirpath):
@@ -156,7 +149,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                         file_path = os.path.join(dirpath, files)
                         if os.path.isfile(file_path):
                             file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_startswith == None and not pass_matching_file_re == None:
             if not dirpath.startswith(pass_if_startswith):
                 for files in filenames:
@@ -164,7 +156,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                         file_path = os.path.join(dirpath, files)
                         if os.path.isfile(file_path):
                             file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_endswith == None and not pass_matching_directory_re == None:
             if not re.search(pass_matching_directory_re, dirpath):
                 for files in filenames:
@@ -172,7 +163,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                         file_path = os.path.join(dirpath, files)
                         if os.path.isfile(file_path):
                             file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_endswith == None and not pass_matching_file_re == None:
             for files in filenames:
                 if not files.endswith(pass_if_endswith):
@@ -180,7 +170,6 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                         file_path = os.path.join(dirpath, files)
                         if os.path.isfile(file_path):
                             file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_matching_directory_re == None and not pass_matching_file_re == None:
             if not re.search(pass_matching_directory_re, dirpath):
                 for files in filenames:
@@ -188,28 +177,24 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None, pass_matchi
                         file_path = os.path.join(dirpath, files)
                         if os.path.isfile(file_path):
                             file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_startswith == None:
             if not dirpath.startswith(pass_if_startswith):
                 for files in filenames:
                     file_path = os.path.join(dirpath, files)
                     if os.path.isfile(file_path):
                         file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_if_endswith == None:
             for files in filenames:
                 if not files.endswith(pass_if_endswith):
                     file_path = os.path.join(dirpath, files)
                     if os.path.isfile(file_path):
                         file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_matching_directory_re == None:
             if not re.search(pass_matching_directory_re, dirpath):
                 for files in filenames:
                     file_path = os.path.join(dirpath, files)
                     if os.path.isfile(file_path):
                         file_list.append((os.path.getsize(file_path), file_path))
-
         elif not pass_matching_file_re == None:
             for files in filenames:
                 if not re.search(pass_matching_file_re, files):
@@ -278,8 +263,7 @@ def check_regex_input(pass_matching_directory_re=None, display_matching_re=None,
             return pass_matching_file_re
         except:
             print('Enter a valid RE.')
-    else:
-        pass
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
