@@ -152,7 +152,7 @@ def sort_list(file_list):
 
 def show_exclude_matching_re(file_list, exclude_matching_re=None):
     '''exclude filenames and paths that match regex.'''
-    if not exclude_matching_re == None:
+    if exclude_matching_re is not None:
         matching_list = []
         for size_in_bytes, name in file_list:
             if not re.search(exclude_matching_re, name):
@@ -163,7 +163,7 @@ def show_exclude_matching_re(file_list, exclude_matching_re=None):
 
 def show_only_matching_re(file_list, display_matching_re=None):
     '''show only filename and paths matching regex'''
-    if not display_matching_re == None:
+    if display_matching_re is not None:
         matching_list = []
         for size_in_bytes, name in file_list:
             if re.search(display_matching_re, name):
