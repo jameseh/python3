@@ -11,7 +11,7 @@
 ####Usage:
 ```./FindLargest.py [DIRECTORY_PATH] [NUMBER_OF_FILES] [OPTIONAL] ...```
 ####Example:
-```./FindLargest.py /home 10 --pd=/dev,/sys,/proc --ere='^.+somepattern+.$'```
+```./FindLargest.py /home 10 --pd /dev,/sys,/proc --ere 'regex'```
 
 #####Mandatory args:
 ```
