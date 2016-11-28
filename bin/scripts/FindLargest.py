@@ -102,10 +102,10 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None,
 
         for files in filenames:
             if pass_if_endswith is not None:
-                if not files.endswith(pass_if_endswith):
+                if files.endswith(pass_if_endswith):
                     continue
             if pass_matching_file_re is not None:
-                if not re.search(pass_matching_file_re, files):
+                if re.search(pass_matching_file_re, files):
                     continue
 
             file_path = os.path.join(dirpath, files)
