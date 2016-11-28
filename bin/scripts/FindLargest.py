@@ -198,14 +198,12 @@ if __name__ == '__main__':
         parser.add_argument("--ere", type=str, help="Exclude all files matching"
                                                     " RE.")
         args = parser.parse_args()
-
         path = check_user_path(args.path)
         number_of_items = check_user_number(args.number_of_items)
         pass_if_startswith = format_pass_if(args.pd)
         pass_if_endswith = format_pass_if(args.pf)
         pass_matching_directory_re = check_regex_input(args.pdre)
         pass_matching_file_re = check_regex_input(args.pfre)
-
         display_matching_re = check_regex_input(args.mre)
         exclude_matching_re = check_regex_input(args.ere)
 
