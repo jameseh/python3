@@ -19,6 +19,10 @@ Optional args:
 --pdre                 - Pass if directory matches regex.
 --pfre                 - Pass if file matches regex.
 
+--sd                   - Search only in directories starting with.
+--sf                   - Show only files ending with.
+--sdre                 - Search only directories matching regex.
+--sfre                 - Show only files matching regex.
 """
 
 
@@ -30,9 +34,14 @@ import re
 
 def main(path, number_of_items, pass_if_startswith=None, pass_if_endswith=None,
          pass_matching_directory_re=None, pass_matching_file_re=None,
-         display_matching_re=None, exclude_matching_re=None):
+         display_matching_re=None, exclude_matching_re=None,
+         display_if_startswith= None, display_if_endswith=None,
+         display_matching_directory_re=None, display_matching_file_re=None):
     file_list = find_files(path, pass_if_startswith, pass_if_endswith,
-                           pass_matching_directory_re, pass_matching_file_re)
+                           pass_matching_directory_re, pass_matching_file_re,
+                           display_if_startswith, display_if_endswith,
+                           display_matching_directory_re,
+                           display_matching_file_re)
     file_list = sort_list(file_list)
     if not display_matching_re == None:
         file_list = show_only_matching_re(file_list, display_matching_re)
@@ -73,21 +82,30 @@ def check_user_path(path):
     sys.exit(1)
 
 
-def format_pass_if(pass_if_startswith=None, pass_if_endswith=None):
+def format_pass_if(pass_if_startswith=None, pass_if_endswith=None,
+                   display_if_startswith=None, display_if_endswith= None):
     '''format optional arguement string into a tuple if not "None".'''
-    if not pass_if_startswith == None:
+    if pass_if_startswith is not None:
         pass_if_startswith = pass_if_startswith.split(',')
         pass_if_startswith = tuple(pass_if_startswith)
         return pass_if_startswith
-    elif not pass_if_endswith == None:
+    if pass_if_endswith is not None:
         pass_if_startswith = pass_if_endswith.split(',')
         pass_if_startswith = tuple(pass_if_endswith)
         return pass_if_endswith
+    if display_if_startswith is not None:
+        display_if_startswith = display_if_startswith.split(',')
+        display_if_startswith = tuple(display_if_startswith)
+    if display_if_endswith is not None:
+        display_if_endswith = display_if_endswith.split(',')
+        display_if_endswith = tuple(display_if_endswith)
 
 
 def find_files(path, pass_if_startswith=None, pass_if_endswith=None,
                pass_matching_directory_re=None,
-               pass_matching_file_re=None):
+               pass_matching_file_re=None, display_if_startswith=None,
+               display_if_endswith=None, display_matching_directory_re=None,
+               display_matching_file_re=None):
     '''find all files recursivly in a given path and save them in a list
     optionally ignoring directories specified.'''
     file_list = []
@@ -99,6 +117,12 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None,
         if pass_matching_directory_re is not None:
             if re.search(pass_matching_directory_re, dirpath):
                 continue
+        if display_if_startswith is not None:
+            if not dirpath.startswith(display_if_startswith):
+                continue
+        if display_matching_directory_re is not None:
+            if not re.search (display_matching_directory_re, dirpath):
+                continue
 
         for files in filenames:
             if pass_if_endswith is not None:
@@ -106,6 +130,12 @@ def find_files(path, pass_if_startswith=None, pass_if_endswith=None,
                     continue
             if pass_matching_file_re is not None:
                 if re.search(pass_matching_file_re, files):
+                    continue
+            if display_if_endswith is not None:
+                if not files.endswith(display_if_endswith):
+                    continue
+            if display_matching_file_re is not None:
+                if not re.search(display_matching_file_re, files):
                     continue
 
             file_path = os.path.join(dirpath, files)
@@ -132,6 +162,7 @@ def show_exclude_matching_re(file_list, exclude_matching_re=None):
 
 
 def show_only_matching_re(file_list, display_matching_re=None):
+    '''show only filename and paths matching regex'''
     if not display_matching_re == None:
         matching_list = []
         for size_in_bytes, name in file_list:
@@ -148,30 +179,22 @@ def print_largest(file_list, number_of_items):
 
 
 def check_regex_input(pass_matching_directory_re=None, display_matching_re=None
-                      , exclude_matching_re=None,
-                      pass_matching_file_re=None):
-    if not pass_matching_directory_re == None:
+                      , exclude_matching_re=None, pass_matching_file_re=None,
+                      display_matching_directory_re=None,
+                      display_matching_file_re=None):
         try:
-            assert re.compile(pass_matching_directory_re)
-            return pass_matching_directory_re
-        except:
-            print('Enter a valid RE.')
-    elif not display_matching_re == None:
-        try:
-            assert re.compile(display_matching_re)
-            return display_matching_re
-        except:
-            print('Enter a valid RE.')
-    elif not exclude_matching_re == None:
-        try:
-            assert re.compile(exclude_matching_re)
-            return exclude_matching_re
-        except:
-            print('Enter a valid RE.')
-    elif not pass_matching_file_re == None:
-        try:
-            assert re.compile(pass_matching_file_re)
-            return pass_matching_file_re
+            if pass_matching_directory_re is not None:
+                return re.compile(pass_matching_directory_re)
+            if pass_matching_file_re is not None:
+                return re.compile(pass_matching_file_re)
+            if display_matching_re is not None:
+                return re.compile(display_matching_re)
+            if exclude_matching_re is not None:
+                return re.compile(exclude_matching_re)
+            if display_matching_directory_re is not None:
+                return re.compile(display_matching_directory_re)
+            if display_matching_file_re is not None:
+                return re.compile(display_matching_file_re)
         except:
             print('Enter a valid RE.')
 
@@ -183,19 +206,30 @@ if __name__ == '__main__':
     else:
         parser = argparse.ArgumentParser()
         parser.add_argument("path", type=str, help="Path to search.")
-        parser.add_argument("number_of_items", help="Number of files to "
-                                                    "display.")
-        parser.add_argument("--pd", type=str, help="Pass if directory starts"
-                                                   " with.")
+        parser.add_argument("number_of_items",
+                            help="Number of files to display.")
+        parser.add_argument("--pd", type=str,
+                            help="Pass if directory starts with.")
         parser.add_argument("--pf", type=str, help="Pass if file ends with.")
-        parser.add_argument("--pdre", type=str, help="Pass if directory matches"
-                                                     " regex.")
-        parser.add_argument("--pfre", type=str, help="Pass if file matches"
-                                                     " regex.")
+        parser.add_argument("--pdre", type=str,
+                            help="Pass if directory matches regex.")
+        parser.add_argument("--pfre", type=str,
+                            help="Pass if file matches regex.")
 
-        parser.add_argument("--mre", type=str, help="Display all files matching"
+        parser.add_argument("--sd", type=str,
+                            help="Search only in directories starting with.")
+        parser.add_argument("--sf", type=str,
+                            help="Show only files ending with.")
+        parser.add_argument("--sdre", type=str,
+                            help="Search only directories matching regex.")
+        parser.add_argument("--sfre", type=str,
+                            help="Show only files matching regex.")
+
+        parser.add_argument("--mre", type=str,
+                            help="Display all files matching"
                                                     " RE.")
-        parser.add_argument("--ere", type=str, help="Exclude all files matching"
+        parser.add_argument("--ere", type=str,
+                            help="Exclude all files matching"
                                                     " RE.")
         args = parser.parse_args()
         path = check_user_path(args.path)
@@ -206,7 +240,13 @@ if __name__ == '__main__':
         pass_matching_file_re = check_regex_input(args.pfre)
         display_matching_re = check_regex_input(args.mre)
         exclude_matching_re = check_regex_input(args.ere)
+        display_if_startswith = format_pass_if(args.sd)
+        display_if_endswith = format_pass_if(args.sf)
+        display_matching_directory_re = check_regex_input(args.sdre)
+        display_matching_file_re = check_regex_input(args.sfre)
 
         main(path, number_of_items, pass_if_startswith, pass_if_endswith,
              pass_matching_directory_re, pass_matching_file_re,
-             display_matching_re, exclude_matching_re)
+             display_matching_re, exclude_matching_re, display_if_startswith,
+             display_if_endswith, display_matching_directory_re,
+             display_matching_file_re)

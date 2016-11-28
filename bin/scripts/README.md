@@ -13,16 +13,22 @@
 
 #####Mandatory args:
 ```
-[DIRECTORY_PATH]                           - Positional argument, full path of directory so search.
-[NUMBER_OF_FILES]                          - Positional argument, number of files to display.
+[DIRECTORY_PATH]       - Positional argument, full path of directory so search.
+[NUMBER_OF_FILES]      - Positional argument, number of files to display.
 ```
 
 #####Optional args:
 ```
---pd                                       - Pass if directory starts with (full path).
---pf                                       - Pass if file ends with.
---pdre                                     - Pass if directory matches regex.
---pfre                                     - Pass if file matches regex.
---mre                                      - Display only filenames or paths matching regex.
---ere                                      - Exclude all filenames or paths matching regex.
+--mre                  - Display only filenames or paths matching regex.
+--ere                  - Exclude all filenames or paths matching regex.
+
+--pd                   - Pass if directory starts with.
+--pf                   - Pass if file ends with.
+--pdre                 - Pass if directory matches regex.
+--pfre                 - Pass if file matches regex.
+
+--sd                   - Search only in directories starting with.
+--sf                   - Show only files ending with.
+--sdre                 - Search only directories matching regex.
+--sfre                 - Show only files matching regex.
 ````
