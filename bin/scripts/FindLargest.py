@@ -234,14 +234,15 @@ if __name__ == '__main__':
         number_of_items = check_user_number(args.number_of_items)
         pass_if_startswith = format_if(args.pd)
         pass_if_endswith = format_if(args.pf)
-        pass_matching_directory_re = check_regex_input(args.pdre)
-        pass_matching_file_re = check_regex_input(args.pfre)
-        display_matching_re = check_regex_input(args.mre)
-        exclude_matching_re = check_regex_input(args.ere)
+        pass_matching_directory_re = check_regex_input(r'{}'.format(args.pdre))
+        pass_matching_file_re = check_regex_input(r'{}'.format(args.pfre))
+        display_matching_re = check_regex_input(r'{}'.format(args.mre))
+        exclude_matching_re = check_regex_input(r'{}'.format(args.ere))
         display_if_startswith = format_if(args.sd)
         display_if_endswith = format_if(args.sf)
-        display_matching_directory_re = check_regex_input(args.sdre)
-        display_matching_file_re = check_regex_input(args.sfre)
+        display_matching_directory_re = check_regex_input(r'{}'
+                                                          .format(args.sdre))
+        display_matching_file_re = check_regex_input(r'{}'.format(args.sfre))
 
         main(path, number_of_items, pass_if_startswith, pass_if_endswith,
              pass_matching_directory_re, pass_matching_file_re,
