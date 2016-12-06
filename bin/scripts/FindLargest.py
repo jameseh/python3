@@ -179,17 +179,17 @@ def check_regex_input(pass_matching_directory_re=None, display_matching_re=None
                       display_matching_file_re=None):
         try:
             if pass_matching_directory_re is not None:
-                return re.compile(pass_matching_directory_re)
+                return re.compile(r'{}'.format(pass_matching_directory_re))
             if pass_matching_file_re is not None:
-                return re.compile(pass_matching_file_re)
+                return re.compile(r'{}'.format(pass_matching_file_re))
             if display_matching_re is not None:
-                return re.compile(display_matching_re)
+                return re.compile(r'{}'.format(display_matching_re))
             if exclude_matching_re is not None:
-                return re.compile(exclude_matching_re)
+                return re.compile(r'{}'.format(exclude_matching_re))
             if display_matching_directory_re is not None:
-                return re.compile(display_matching_directory_re)
+                return re.compile(r'{}'.format(display_matching_directory_re))
             if display_matching_file_re is not None:
-                return re.compile(display_matching_file_re)
+                return re.compile(r'{}'.format(display_matching_file_re))
         except:
             print('Enter a valid RE.')
 
