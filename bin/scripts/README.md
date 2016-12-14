@@ -7,7 +7,9 @@
 
 ### Fetch APOD from apod.nasa.gov.
 
-#### Usage: Meant to be used on a systemd timer or cron to run daily.
+#### Usage:
+```Meant to be used on a systemd timer or cron to run daily.```
+
 
 
 
@@ -16,7 +18,9 @@
 
 ### Set walpaper with feh to the last APOD downloaded.
 
-#### Usage: Depends on feh, intended to be started when you start your wm or de.
+#### Usage:
+```Depends on feh, intended to be started when you start your wm or de.```
+
 
 
 
