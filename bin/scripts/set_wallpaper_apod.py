@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-'''Set background with most recent image in PATH.'''
+'''Set background with most recent APOD, .'''
 
 import os
 import time
 
 
 PATH = '/home/james/Pictures/apod/' # path of the directory to search.
-
+SLEEP = 3600
 
 def main(path):
     file_list = create_file_list(path)
@@ -15,11 +15,8 @@ def main(path):
 
 
 def create_file_list(path):
-    '''
-    Walk the PATH, find all files and add a tuple of ST_CTIME and the files name
-    to a list.
-    ex: (ST_CTIME, filename)
-    '''
+    '''Walk the PATH, find all files and add a tuple of st_mtime and the files
+    name to a list.'''
     file_list = []
     for dirpath, dirnames, filenames in os.walk(path, topdown=False, followlinks=False):
         for files in filenames:
@@ -40,4 +37,4 @@ def set_background(file_list):
 if __name__ == '__main__':
     while True:
         main(PATH)
-        time.sleep(3600)
+        time.sleep(SLEEP)

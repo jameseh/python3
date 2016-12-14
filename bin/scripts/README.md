@@ -2,6 +2,25 @@
 
 
 
+
+## fetch_apod.py
+
+### Fetch APOD from apod.nasa.gov.
+
+#### Usage: Meant to be used on a systemd timer or cron to run daily.
+
+
+
+
+## set_wallpaper_apod.py
+
+### Set walpaper with feh to the last APOD downloaded.
+
+#### Usage: Depends on feh, intended to be started when you start your wm or de.
+
+
+
+
 ## FindLargest.py
 
 ###Find all files in recursively from [DIRECTORY_PATH], sort and display the [NUMBER_OF_FILES] specified.
