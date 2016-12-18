@@ -3,23 +3,12 @@
 
 
 
-## fetch_apod.py
+## apodw.py
 
-### Fetch APOD from apod.nasa.gov.
-
-#### Usage:
-```Meant to be used on a systemd timer or cron to run daily.```
-
-
-
-
-
-## set_wallpaper_apod.py
-
-### Set walpaper with feh to the last APOD downloaded.
+### Download and set the the lastest APOD (Astronomy Picture of the Day) from http://apod.nasa.gov, as wallpaper with feh, pass if the APOD is already in library.
 
 #### Usage:
-```Depends on feh, intended to be started when you start your wm or de.```
+```Depends on feh, and third party module requests. Intended to be automatically ran daily.```
 
 
 
